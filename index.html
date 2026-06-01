@@ -187,7 +187,7 @@
     // Colores corporativos de las líneas del Metro de Madrid
     const coloresLineas = {
         "L1": "#009BDE", "L2": "#E81B24", "L3": "#FCC50A", "L4": "#995024",
-        "L5": "#8EC54A", "L6": "#989A9D", "L7": "#F48B25", "L8": "#DF76A3",
+        "L5": "#8EC54A", "L6": "#989A9D", "L7A": "#F48B25", "L7B": "#F48B25", "L8": "#DF76A3",
         "L9A": "#87208E", "L9B": "#87208E", "L10A": "#00559A", "L10B": "#00559A",
         "L11": "#009E4E", "L12": "#A4992E", "R": "#FFFFFF", "ML1": "#12B8E5",
         "Recinto": "#5cb85c"
@@ -200,7 +200,8 @@
         "L4": ["Argüelles", "San Bernardo", "Bilbao", "Alonso Martínez", "Colón", "Serrano", "Velázquez", "Goya", "Lista", "Diego de León", "Avenida de América", "Prosperidad", "Alfonso XIII", "Avenida de la Paz", "Arturo Soria", "Esperanza", "Canillas", "Mar de Cristal", "San Lorenzo", "Parque de Santa María", "Hortaleza", "Manoteras", "Pinar de Chamartín"],
         "L5": ["Alameda de Osuna", "El Capricho", "Canillejas", "Torre Arias", "Suanzes", "Ciudad Lineal", "Pueblo Nuevo", "Quintana", "El Carmen", "Ventas", "Diego de León", "Núñez de Balboa", "Rubén Darío", "Alonso Martínez", "Chueca", "Gran Vía", "Callao", "Ópera", "La Latina", "Puerta de Toledo", "Acacias", "Pirámides", "Marqués de Vadillo", "Urgel", "Oporto", "Vista Alegre", "Carabanchel", "Eugenia de Montijo", "Aluche", "Empalme", "Campamento", "Casa de Campo"],
         "L6": ["Laguna", "Carpetana", "Oporto", "Opañel", "Plaza Elíptica", "Usera", "Legazpi", "Arganzuela-Planetario", "Méndez Álvaro", "Pacífico", "Conde de Casal", "Sainz de Baranda", "O'Donnell", "Manuel Becerra", "Diego de León", "Avenida de América", "República Argentina", "Nuevos Ministerios", "Cuatro Caminos", "Guzmán el Bueno", "Vicente Aleixandre", "Ciudad Universitaria", "Moncloa", "Argüelles", "Príncipe Pío", "Puerta del Ángel", "Alto de Extremadura", "Lucero"],
-        "L7": ["Hospital del Henares", "Henares", "San Fernando", "La Rambla", "Coslada Central", "Barrio del Puerto", "Estadio Metropolitano", "Las Musas", "San Blas", "Simancas", "García Noblejas", "Ascao", "Pueblo Nuevo", "Barrio de la Concepción", "Parque de las Avenidas", "Cartagena", "Avenida de América", "Gregorio Marañón", "Alonso Cano", "Canal", "Islas Filipinas", "Guzmán el Bueno", "Francos Rodríguez", "Valdezarza", "Antonio Machado", "Peñagrande", "Avenida de la Ilustración", "Lacoma", "Arroyofresno", "Pitis"],
+        "L7B": ["Hospital del Henares", "Henares", "San Fernando", "La Rambla", "Coslada Central", "Barrio del Puerto", "Estadio Metropolitano"],
+        "L7A": ["Estadio Metropolitano", "Las Musas", "San Blas", "Simancas", "García Noblejas", "Ascao", "Pueblo Nuevo", "Barrio de la Concepción", "Parque de las Avenidas", "Cartagena", "Avenida de América", "Gregorio Marañón", "Alonso Cano", "Canal", "Islas Filipinas", "Guzmán el Bueno", "Francos Rodríguez", "Valdezarza", "Antonio Machado", "Peñagrande", "Avenida de la Ilustración", "Lacoma", "Arroyofresno", "Pitis"],
         "L8": ["Nuevos Ministerios", "Colombia", "Pinar del Rey", "Mar de Cristal", "Feria de Madrid", "Aeropuerto T1-T2-T3", "Barajas", "Aeropuerto T4"],
         "L9A": ["Paco de Lucía", "Mirasierra", "Herrera Oria", "Barrio del Pilar", "Ventilla", "Plaza de Castilla", "Duque de Pastrana", "Pío XII", "Colombia", "Concha Espina", "Cruz del Rayo", "Avenida de América", "Núñez de Balboa", "Príncipe de Vergara", "Ibiza", "Sainz de Baranda", "Estrella", "Vinateros", "Artilleros", "Pavones", "Valdebernardo", "Vicálvaro", "San Cipriano", "Puerta de Arganda"],
         "L9B": ["Puerta de Arganda", "Rivas-Urbanizaciones", "Rivas Futura", "Rivas Vaciamadrid", "La Poveda", "Arganda del Rey"],
@@ -249,6 +250,15 @@
         grafo[n2].push({ nodo: n1, peso: pesoFinal, esTransbordo: esTransbordo });
     }
 
+    function addRecintoConRamasAB(nombreRecinto, nodoLineaA, costeA, nodoLineaB, costeB) {
+        let nodoRecintoA = `${nombreRecinto} A|Recinto`;
+        let nodoRecintoB = `${nombreRecinto} B|Recinto`;
+
+        addEdge(nodoRecintoA, nodoLineaA, costeA);
+        addEdge(nodoRecintoB, nodoLineaB, costeB);
+        addEdge(nodoRecintoA, nodoRecintoB, 1);
+    }
+
     for (let linea in lineas) {
         let estaciones = lineas[linea];
         for (let i = 0; i < estaciones.length; i++) {
@@ -279,9 +289,8 @@
     addEdge("Noviciado|L2", "Plaza de España|L10A", 1, true);
 
     addEdge("Depósito 4|Recinto", "Canillejas|L5", 2);
-    addEdge("Depósito 4|Recinto", "Las Musas|L7", 2);
-    addEdge("Depósito 6 (Fuencarral)|Recinto", "Tres Olivos|L10A", 2);
-    addEdge("Depósito 6 (Fuencarral)|Recinto", "Tres Olivos|L10B", 2);
+    addEdge("Depósito 4|Recinto", "Las Musas|L7A", 2);
+    addRecintoConRamasAB("Depósito 6 (Fuencarral)", "Tres Olivos|L10A", 2, "Tres Olivos|L10B", 2);
     addEdge("Depósito 7 (Sacedal)|Recinto", "Mirasierra|L9A", 2);
     addEdge("Depósito 8|Recinto", "Laguna|L6", 3);
     addEdge("Depósito 9.1|Recinto", "Pinar de Chamartín|L1", 3);
@@ -292,8 +301,7 @@
     addEdge("Depósito 12|Recinto", "Valdecarros|L1", 3);
     addEdge("Depósito 13|Recinto", "El Casar|L3", 3);
     addEdge("Depósito 13|Recinto", "El Casar|L12", 3);
-    addEdge("Cochera Pta. Arganda|Recinto", "Puerta de Arganda|L9A", 3);
-    addEdge("Cochera Pta. Arganda|Recinto", "Puerta de Arganda|L9B", 3);
+    addRecintoConRamasAB("Cochera Pta. Arganda", "Puerta de Arganda|L9A", 3, "Puerta de Arganda|L9B", 3);
     addEdge("Depósito 2|Recinto", "Ventas|L2", 1);
     addEdge("Depósito 2|Recinto", "Ventas|L5", 1);
     addEdge("Depósito 5|Recinto", "Aluche|L5", 1);
