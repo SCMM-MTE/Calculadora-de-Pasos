@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="SCMM Pasos">
+    <meta name="apple-mobile-web-app-title" content="Calculadora de Pasos MTE">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#e3001b">
     
-    <title>Calculadora de Pasos - SCMM</title>
+    <title>Calculadora de Pasos MTE</title>
     <style>
         /* --- ESTILOS GENERALES Y PROTECCIÓN --- */
         body { 
@@ -28,13 +28,11 @@
         }
 
         #background-container {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1; 
-            pointer-events: none; 
+            display: none;
         }
 
         .floating-logo {
+            display: none;
             position: absolute;
             width: 220px; 
             height: 220px;
@@ -136,10 +134,9 @@
 </head>
 <body>
 
-<div id="background-container"></div>
 
 <div class="container">
-    <h1>Calculadora Pasos SCMM</h1>
+    <h1>Calculadora de Pasos MTE</h1>
     
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('ruta')" id="btn-ruta">Ruta Exacta</button>
@@ -317,62 +314,10 @@
     }
 
     function generarFondoDinamico() {
-        const container = document.getElementById('background-container');
-        container.innerHTML = ''; 
-        
-        const isMobile = window.innerWidth <= 600;
-        const size = isMobile ? 150 : 220; 
-        const safeDistance = size * 1.15; 
-        
-        const maxLogos = isMobile ? 5 : 12; 
-        const placedLogos = [];
-
-        for (let i = 0; i < maxLogos; i++) {
-            let overlap = true;
-            let attempts = 0;
-            let posX, posY;
-
-            while (overlap && attempts < 150) {
-                overlap = false;
-                posX = Math.random() * (window.innerWidth - size);
-                posY = Math.random() * (window.innerHeight - size);
-
-                for (const placed of placedLogos) {
-                    const dx = posX - placed.x;
-                    const dy = posY - placed.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    if (distance < safeDistance) { overlap = true; break; }
-                }
-                attempts++;
-            }
-
-            if (!overlap) {
-                placedLogos.push({x: posX, y: posY});
-                let logo = document.createElement('div');
-                logo.classList.add('floating-logo');
-                logo.style.left = posX + 'px';
-                logo.style.top = posY + 'px';
-                
-                let duracion = Math.random() * 40 + 25; 
-                let direccion = Math.random() > 0.5 ? 'normal' : 'reverse';
-                logo.style.animationDuration = duracion + 's';
-                logo.style.animationDirection = direccion;
-                logo.style.animationDelay = '-' + (Math.random() * 50) + 's';
-
-                container.appendChild(logo);
-            }
-        }
+        return;
     }
 
     window.onload = function() {
-        generarFondoDinamico();
-        
-        window.addEventListener('resize', () => {
-            clearTimeout(window.resizeTimer);
-            window.resizeTimer = setTimeout(generarFondoDinamico, 300);
-        });
-
         let selectores = ["origen", "destino", "origen-cabeceras"].map(id => document.getElementById(id));
         
         let nodosOrdenados = [...nodos].sort((a, b) => {
@@ -556,4 +501,3 @@
 
 </body>
 </html>
-
