@@ -86,6 +86,15 @@
         .form-group { margin-bottom: 20px; }
         label { display: block; font-weight: bold; margin-bottom: 8px; color: #444; }
         select { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; background-color: #f9f9f9; appearance: none; -webkit-appearance: none; }
+        .toggle-card { display: flex; align-items: center; gap: 14px; padding: 14px 16px; margin: -4px 0 20px; border: 1px solid #d9e2ef; border-radius: 12px; background: linear-gradient(135deg, #ffffff, #f4f8ff); cursor: pointer; box-shadow: 0 6px 18px rgba(0, 86, 179, 0.08); }
+        .toggle-card input { position: absolute; opacity: 0; pointer-events: none; }
+        .toggle-switch { position: relative; flex: 0 0 auto; width: 52px; height: 30px; border-radius: 999px; background: #cbd5e1; transition: background 0.25s ease, box-shadow 0.25s ease; }
+        .toggle-switch::after { content: ""; position: absolute; top: 4px; left: 4px; width: 22px; height: 22px; border-radius: 50%; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.25); transition: transform 0.25s ease; }
+        .toggle-card input:checked + .toggle-switch { background: #0056b3; box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.12); }
+        .toggle-card input:checked + .toggle-switch::after { transform: translateX(22px); }
+        .toggle-text { display: flex; flex-direction: column; gap: 2px; line-height: 1.2; }
+        .toggle-title { font-weight: 800; color: #1f2937; }
+        .toggle-subtitle { font-size: 13px; color: #64748b; font-weight: 600; }
         
         button.action-btn { width: 100%; padding: 16px; background-color: #0056b3; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; transition: background 0.3s; font-weight: bold; box-shadow: 0 4px 6px rgba(0,86,179,0.2);}
         button.action-btn:hover { background-color: #004494; }
@@ -128,6 +137,7 @@
             .ruta-lista li { font-size: 14px; flex-direction: column; align-items: flex-start; }
             .pasos-badge { align-self: flex-end; margin-top: 5px; }
             select { font-size: 16px; padding: 12px; } 
+            .toggle-card { align-items: flex-start; padding: 12px; }
             .floating-logo { width: 150px; height: 150px; } 
         }
     </style>
@@ -161,6 +171,14 @@
             <label for="origen-cabeceras">Selecciona tu ubicación actual:</label>
             <select id="origen-cabeceras"></select>
         </div>
+        <label class="toggle-card" for="incluir-todas-estaciones">
+            <input type="checkbox" id="incluir-todas-estaciones" onchange="if (document.getElementById('resultado-cabeceras').style.display === 'block') calcularCabeceras();">
+            <span class="toggle-switch" aria-hidden="true"></span>
+            <span class="toggle-text">
+                <span class="toggle-title">Incluir todas las estaciones</span>
+                <span class="toggle-subtitle">Calcula tambien estaciones, cabeceras y depositos</span>
+            </span>
+        </label>
         <button class="action-btn" onclick="calcularCabeceras()">Buscar Cabeceras</button>
         <div id="resultado-cabeceras"></div>
     </div>
@@ -464,6 +482,7 @@
 
     function calcularCabeceras() {
         let origen = document.getElementById("origen-cabeceras").value;
+        let incluirTodasEstaciones = document.getElementById("incluir-todas-estaciones").checked;
         let { distancias } = ejecutarDijkstra(origen);
         
         let cabeceras = [];
@@ -502,10 +521,23 @@
             ...depositos.map(d => ({ ...d, icono: "🏢" }))
         ].sort((a, b) => a.dist - b.dist || a.nodo.localeCompare(b.nodo));
 
+        if (incluirTodasEstaciones) {
+            resultados = nodos
+                .filter(n => n !== origen)
+                .map(n => ({
+                    nodo: n,
+                    dist: ejecutarDijkstra(origen, n).distancias[n],
+                    icono: n.endsWith("|Recinto") ? "🏢" : "📍"
+                }))
+                .filter(r => r.dist !== Infinity)
+                .sort((a, b) => a.dist - b.dist || a.nodo.localeCompare(b.nodo));
+        }
+
         let div = document.getElementById("resultado-cabeceras");
         div.style.display = "block";
         
-        let html = `<h2>Distancia a Cabeceras y Depósitos</h2>`;
+        let tituloResultado = incluirTodasEstaciones ? "Distancia a todas las estaciones" : "Distancia a Cabeceras y Depósitos";
+        let html = `<h2>${tituloResultado}</h2>`;
         html += `<ul class="ruta-lista" style="border: 1px solid #ccc; border-radius: 8px; background: white;">`;
         resultados.forEach(r => {
             let nombreFormateado = r.nodo.replace("|", " (") + ")";
