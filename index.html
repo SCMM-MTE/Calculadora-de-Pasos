@@ -486,18 +486,33 @@
                 cabeceras.push({ nodo: cabecera2, dist: distancias[cabecera2] });
             }
         }
-        cabeceras = cabeceras.filter(c => c.dist !== Infinity).sort((a, b) => a.dist - b.dist);
+
+        cabeceras = cabeceras
+            .filter(c => c.dist !== Infinity)
+            .sort((a, b) => a.dist - b.dist || a.nodo.localeCompare(b.nodo));
+
+        let depositos = nodos
+            .filter(n => n.endsWith("|Recinto") && n.startsWith("Depósito"))
+            .map(n => ({ nodo: n, dist: distancias[n] }))
+            .filter(d => d.dist !== Infinity)
+            .sort((a, b) => a.dist - b.dist || a.nodo.localeCompare(b.nodo));
+
+        let resultados = [
+            ...cabeceras.map(c => ({ ...c, icono: "📍" })),
+            ...depositos.map(d => ({ ...d, icono: "🏢" }))
+        ].sort((a, b) => a.dist - b.dist || a.nodo.localeCompare(b.nodo));
 
         let div = document.getElementById("resultado-cabeceras");
         div.style.display = "block";
         
-        let html = `<h2>Distancia a Cabeceras</h2>`;
+        let html = `<h2>Distancia a Cabeceras y Depósitos</h2>`;
         html += `<ul class="ruta-lista" style="border: 1px solid #ccc; border-radius: 8px; background: white;">`;
-        cabeceras.forEach(c => {
-            let nombreFormateado = c.nodo.replace("|", " (") + ")";
-            html += `<li><span>📍 ${nombreFormateado}</span> <span class="pasos-badge">${c.dist} pasos</span></li>`;
+        resultados.forEach(r => {
+            let nombreFormateado = r.nodo.replace("|", " (") + ")";
+            html += `<li><span>${r.icono} ${nombreFormateado}</span> <span class="pasos-badge">${r.dist} pasos</span></li>`;
         });
         html += `</ul>`;
+
         div.innerHTML = html;
     }
 </script>
