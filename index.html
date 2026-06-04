@@ -493,7 +493,7 @@
 
         let depositos = nodos
             .filter(n => n.endsWith("|Recinto") && n.startsWith("Depósito"))
-            .map(n => ({ nodo: n, dist: distancias[n] }))
+            .map(n => ({ nodo: n, dist: ejecutarDijkstra(origen, n).distancias[n] }))
             .filter(d => d.dist !== Infinity)
             .sort((a, b) => a.dist - b.dist || a.nodo.localeCompare(b.nodo));
 
