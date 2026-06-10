@@ -360,6 +360,7 @@
         let distancias = {};
         let previos = {};
         let noVisitados = new Set(nodos);
+        const recintosTransitables = new Set(["Depósito 4|Recinto"]);
 
         nodos.forEach(n => { distancias[n] = Infinity; previos[n] = null; });
         distancias[origen] = 0;
@@ -375,7 +376,10 @@
 
             for (let vecino of grafo[nodoMinimo]) {
                 if (noVisitados.has(vecino.nodo)) {
-                    if (vecino.nodo.includes("Recinto") && vecino.nodo !== origen && vecino.nodo !== destinoParaValidacion) {
+                    if (vecino.nodo.includes("Recinto") &&
+                        vecino.nodo !== origen &&
+                        vecino.nodo !== destinoParaValidacion &&
+                        !recintosTransitables.has(vecino.nodo)) {
                         continue; 
                     }
 
