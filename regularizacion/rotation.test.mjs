@@ -6,11 +6,17 @@ test('reproduce filas literales de la tabla y conserva la asignación personal',
  const cases=[['2027',1,1,['A1','A2','A3','A4','B1','B2','B3','B4','C1','C2','C3','C4']],['2028',13,12,['B2','B3','B4','B1','C2','C3','C4','C1','A2','A3','A4','A1']],['2029',2,7,['C3','C4','C1','C2','A3','A4','A1','A2','B3','B4','B1','B2']],['2039',7,1,['A1','A2','A3','A4','B1','B2','B3','B4','C1','C2','C3','C4']]];
  for(const [year,block,priority,order] of cases){const r=calculate(a,year);assert.equal(r.block,block);assert.equal(r.withinBlockPriority,priority);assert.deepEqual(r.order,order);assert.equal(r.permanentSlot,'A1');assert.equal(r.documentaryRange,true)}
 });
-test('no presenta como documental ninguna de las dos continuidades tras 2039',()=>{
- const continuous=calculate(a,'2040'),reset=calculate(a,'2040','repeat13');
- assert.equal(continuous.documentaryRange,false);assert.equal(reset.documentaryRange,false);
- assert.equal(continuous.block,1);assert.equal(reset.block,1);
- assert.equal(continuous.withinBlockPriority,12);assert.equal(reset.withinBlockPriority,1);
+test('continúa anualmente en 2040 y 2041 sin reinicio interno a los trece años',()=>{
+ const next=calculate(a,'2040');
+ assert.equal(next.documentaryRange,false);
+ assert.equal(next.continuation,'continuous');
+ assert.equal(next.block,1);
+ assert.deepEqual(next.order,['B2','B3','B4','B1','C2','C3','C4','C1','A2','A3','A4','A1']);
+ assert.equal(next.withinBlockPriority,12);
+ const following=calculate(a,'2041');
+ assert.equal(following.block,13);
+ assert.equal(following.order[0],'C3');
+ assert.equal(calculate(a,'2183').subgroupPriority,calculate(a,'2027').subgroupPriority);
 });
 test('no trunca años por precisión numérica ni fija máximo arbitrario',()=>{
  const year='10000000000000000000000000000000000000000';

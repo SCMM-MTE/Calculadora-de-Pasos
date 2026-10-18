@@ -5,6 +5,8 @@ export const evidence = Object.freeze({
   filename: '20260513 XXII JORNADA MTE.pdf',
   sha256: 'c9c19383040e32b34d77b8d7686a0c94449053a6fcb1c79675a8efefa803aae4',
   pages: '4–6', firstYear: 2027, lastTableYear: 2039,
+  continuation: 'continuous',
+  continuationBasis: 'Confirmación expresa del usuario, 18/10/2026: continuidad anual.',
 });
 export const blocks = Object.freeze([1,13,2,12,3,11,4,10,5,9,6,8,7]);
 export function validateAssignment(value) {
@@ -31,16 +33,15 @@ export function slotOrder(offset) {
     result.push(groups[(g+Number(offset%3n))%3]+((s+Number(offset%4n))%4+1));
   return result;
 }
-export function calculate(value,yearInput,continuation='continuous') {
+export function calculate(value,yearInput) {
   const a=validateAssignment(value),year=parseYear(yearInput),elapsed=year-2027n;
-  if(!['continuous','repeat13'].includes(continuation))throw Error('Continuidad desconocida.');
   const blockOffset=Number(elapsed%13n);
   const block=blocks[(blocks.indexOf(a.initial_block)+blockOffset)%13];
-  const slots=slotOrder(continuation==='repeat13'?elapsed%13n:elapsed);
+  const slots=slotOrder(elapsed);
   const within=slots.indexOf(a.group+a.subgroup)+1;
   return {year:String(year),block,permanentSlot:a.group+a.subgroup,order:slots,
     withinBlockPriority:within,subgroupPriority:(block-1)*12+within,
-    documentaryRange:year<=2039n,continuation};
+    documentaryRange:year<=2039n,continuation:evidence.continuation};
 }
 export function lotteryStart(number,population){
   if(!/^\d{1,5}$/.test(String(number)) || !/^\d+$/.test(String(population)) || BigInt(population)<1n)
