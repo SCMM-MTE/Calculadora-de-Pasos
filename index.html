@@ -7,9 +7,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Calculadora de Pasos MTE">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#e3001b">
+    <meta name="theme-color" content="#123f79">
     
     <title>Calculadora de Pasos MTE</title>
+    <script src="theme.js"></script>
     <style>
         /* --- ESTILOS GENERALES Y PROTECCIÓN --- */
         body { 
@@ -141,12 +142,17 @@
             .floating-logo { width: 150px; height: 150px; } 
         }
     </style>
+    <link rel="stylesheet" href="theme.css">
 </head>
 <body>
 
 
 <div class="container">
-    <h1>Calculadora de Pasos MTE</h1>
+    <header class="scmm-header">
+        <img src="assets/scmm-logo.png" alt="SCMM" width="72" height="72">
+        <h1>Calculadora de Pasos MTE</h1>
+        <label class="theme-control">Tema<select data-scmm-theme aria-label="Tema de la aplicación"><option value="system">Sistema</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></label>
+    </header>
     
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('ruta')" id="btn-ruta">Ruta Exacta</button>
@@ -542,7 +548,7 @@
         
         let tituloResultado = incluirTodasEstaciones ? "Distancia a todas las estaciones" : "Distancia a Cabeceras y Depósitos";
         let html = `<h2>${tituloResultado}</h2>`;
-        html += `<ul class="ruta-lista" style="border: 1px solid #ccc; border-radius: 8px; background: white;">`;
+        html += `<ul class="ruta-lista" style="border: 1px solid var(--line); border-radius: 8px; background: var(--panel);">`;
         resultados.forEach(r => {
             let nombreFormateado = r.nodo.replace("|", " (") + ")";
             html += `<li><span>${r.icono} ${nombreFormateado}</span> <span class="pasos-badge">${r.dist} pasos</span></li>`;
